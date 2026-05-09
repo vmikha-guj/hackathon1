@@ -221,23 +221,40 @@ export default function App() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#F8F7FF",
+        background: "linear-gradient(135deg, #F8F7FF 0%, #EEEDFE 30%, #F0EEFF 60%, #F8F7FF 100%)",
+        backgroundSize: "400% 400%",
+        animation: "gradientShift 15s ease infinite",
         fontFamily: "'DM Sans', system-ui, sans-serif",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
       <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet"
       />
+
+      {/* ── Ambient floating orbs ── */}
+      <div style={{
+        position: "fixed", top: "-10%", right: "-5%", width: 400, height: 400,
+        borderRadius: "50%", background: "radial-gradient(circle, rgba(127,119,221,0.08) 0%, transparent 70%)",
+        animation: "float 8s ease-in-out infinite", pointerEvents: "none", zIndex: 0,
+      }} />
+      <div style={{
+        position: "fixed", bottom: "-10%", left: "-5%", width: 300, height: 300,
+        borderRadius: "50%", background: "radial-gradient(circle, rgba(83,74,183,0.06) 0%, transparent 70%)",
+        animation: "float 10s ease-in-out infinite", animationDelay: "2s", pointerEvents: "none", zIndex: 0,
+      }} />
 
       {/* ── Navbar ── */}
       <nav
         style={{
-          background: "rgba(255,255,255,0.85)",
-          backdropFilter: "blur(12px)",
-          borderBottom: "0.5px solid rgba(83,74,183,0.12)",
+          background: "rgba(255,255,255,0.75)",
+          backdropFilter: "blur(20px) saturate(180%)",
+          WebkitBackdropFilter: "blur(20px) saturate(180%)",
+          borderBottom: "1px solid rgba(83,74,183,0.08)",
           padding: "0 2rem",
-          height: 58,
+          height: 62,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -246,27 +263,29 @@ export default function App() {
           zIndex: 20,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div
             style={{
-              width: 32,
-              height: 32,
-              borderRadius: 10,
-              background: "linear-gradient(135deg,#7F77DD,#534AB7)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              width: 36, height: 36, borderRadius: 11,
+              background: "linear-gradient(135deg, #7F77DD, #534AB7, #3D35A0)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 2px 10px rgba(83,74,183,0.3)",
             }}
           >
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.2">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2">
               <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" />
             </svg>
           </div>
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17, color: "#1a1744", letterSpacing: "-0.02em" }}>
-            Map<span style={{ color: "#534AB7" }}>Describer</span>
-          </span>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: "#1a1744", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
+              Outskill Hackathon
+            </span>
+            <span style={{ fontSize: 10, color: "#8883C4", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+              Group 15 • MapDescriber
+            </span>
+          </div>
         </div>
-        <div style={{ display: "flex", gap: 4, background: "#EEEDFE", borderRadius: 10, padding: 4 }}>
+        <div style={{ display: "flex", gap: 3, background: "rgba(238,237,254,0.7)", borderRadius: 12, padding: 3, border: "1px solid rgba(175,169,236,0.3)" }}>
           {(["map", "grid", "list"] as const).map((v) => (
             <button
               key={v}
@@ -274,14 +293,15 @@ export default function App() {
               style={{
                 background: view === v ? "white" : "transparent",
                 border: "none",
-                borderRadius: 7,
-                padding: "6px 14px",
-                fontSize: 13,
-                fontWeight: view === v ? 600 : 400,
+                borderRadius: 9,
+                padding: "7px 16px",
+                fontSize: 12,
+                fontWeight: view === v ? 700 : 500,
                 color: view === v ? "#534AB7" : "#8883C4",
                 cursor: "pointer",
-                boxShadow: view === v ? "0 1px 4px rgba(83,74,183,0.15)" : "none",
-                transition: "all 0.15s",
+                boxShadow: view === v ? "0 2px 8px rgba(83,74,183,0.12)" : "none",
+                transition: "all 0.2s cubic-bezier(0.4,0,0.2,1)",
+                letterSpacing: "0.01em",
               }}
             >
               {viewLabels[v]}
@@ -290,69 +310,81 @@ export default function App() {
         </div>
       </nav>
 
-      <div style={{ maxWidth: 800, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
+      <div style={{ maxWidth: 820, margin: "0 auto", padding: "2.5rem 1.5rem", position: "relative", zIndex: 1 }}>
         {/* ══════ MAP VIEW ══════ */}
         {view === "map" && (
           <>
-            <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+            <div style={{ textAlign: "center", marginBottom: "2.5rem", animation: "fadeInUp 0.6s ease-out" }}>
               <div style={{
-                display: "inline-flex", alignItems: "center", gap: 6,
-                background: "#EEEDFE", border: "1px solid #AFA9EC",
-                borderRadius: 999, padding: "4px 14px",
-                fontSize: 11, fontWeight: 600, color: "#534AB7",
-                letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 18,
+                display: "inline-flex", alignItems: "center", gap: 8,
+                background: "rgba(238,237,254,0.8)", border: "1px solid rgba(175,169,236,0.4)",
+                backdropFilter: "blur(8px)",
+                borderRadius: 999, padding: "5px 18px",
+                fontSize: 11, fontWeight: 700, color: "#534AB7",
+                letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 22,
               }}>
-                ✦ AI-Powered Web Cartography
+                <span style={{ display: "inline-block", animation: "float 3s ease-in-out infinite" }}>✦</span>
+                AI-Powered Web Cartography
               </div>
               <h1 style={{
                 fontFamily: "'Syne',sans-serif", fontWeight: 800,
-                fontSize: "clamp(30px,5vw,48px)", lineHeight: 1.1,
-                letterSpacing: "-0.03em", margin: "0 0 14px", color: "#1a1744",
+                fontSize: "clamp(34px,6vw,56px)", lineHeight: 1.05,
+                letterSpacing: "-0.04em", margin: "0 0 18px", color: "#1a1744",
               }}>
                 Explore Any Site.<br />
-                <span style={{ background: "linear-gradient(135deg,#7F77DD,#534AB7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                <span style={{
+                  background: "linear-gradient(135deg, #7F77DD 0%, #534AB7 40%, #3D35A0 70%, #7F77DD 100%)",
+                  backgroundSize: "200% auto",
+                  animation: "shimmer 3s linear infinite",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}>
                   Map Its DNA.
                 </span>
               </h1>
-              <p style={{ fontSize: 15, color: "#6B6B8A", margin: "0 auto", maxWidth: 440, lineHeight: 1.7 }}>
-                Paste any URL to generate a structured map entry — title, value
-                proposition, navigation, semantic tags, and information density.
-                Results are cached automatically.
+              <p style={{ fontSize: 15, color: "#6B6B8A", margin: "0 auto", maxWidth: 460, lineHeight: 1.75 }}>
+                Paste any URL to generate an AI-powered site map — value proposition,
+                navigation structure, semantic tags, product extraction, and information density scoring.
               </p>
             </div>
 
             {/* Search bar */}
             <div style={{
-              background: "white", border: "1.5px solid #AFA9EC",
-              borderRadius: 16, padding: "6px 6px 6px 18px",
+              background: "rgba(255,255,255,0.9)", border: "1.5px solid rgba(175,169,236,0.5)",
+              backdropFilter: "blur(12px)",
+              borderRadius: 18, padding: "6px 6px 6px 20px",
               display: "flex", alignItems: "center", gap: 10,
-              marginBottom: 28, boxShadow: "0 4px 24px rgba(83,74,183,0.10)",
+              marginBottom: 28,
+              boxShadow: "0 4px 30px rgba(83,74,183,0.10), 0 1px 3px rgba(83,74,183,0.06)",
+              transition: "all 0.3s ease",
+              animation: "fadeInUp 0.6s ease-out 0.15s both",
             }}>
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#AFA9EC" strokeWidth="2" style={{ flexShrink: 0 }}>
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#AFA9EC" strokeWidth="2" style={{ flexShrink: 0 }}>
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
               <input
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleMap()}
-                placeholder="https://example.com"
+                placeholder="https://example.com — paste any URL to map"
                 style={{
                   flex: 1, border: "none", outline: "none",
                   background: "transparent", fontSize: 14,
-                  color: "#1a1744", padding: "10px 0", fontFamily: "inherit",
+                  color: "#1a1744", padding: "12px 0", fontFamily: "inherit",
                 }}
               />
               <button
                 onClick={handleMap}
                 disabled={loading || !url.trim()}
+                className="btn-glow"
                 style={{
                   background: loading ? "#AFA9EC" : "linear-gradient(135deg,#7F77DD,#534AB7)",
-                  color: "white", border: "none", borderRadius: 12,
-                  padding: "12px 24px", fontSize: 13, fontWeight: 700,
+                  color: "white", border: "none", borderRadius: 13,
+                  padding: "13px 28px", fontSize: 13, fontWeight: 700,
                   cursor: loading ? "not-allowed" : "pointer",
-                  whiteSpace: "nowrap", letterSpacing: "0.02em",
-                  boxShadow: loading ? "none" : "0 2px 12px rgba(83,74,183,0.35)",
-                  transition: "all 0.2s",
+                  whiteSpace: "nowrap", letterSpacing: "0.03em",
+                  boxShadow: loading ? "none" : "0 4px 16px rgba(83,74,183,0.35)",
+                  transition: "all 0.25s cubic-bezier(0.4,0,0.2,1)",
                 }}
               >
                 {loading ? "Mapping…" : "Map It ↗"}
