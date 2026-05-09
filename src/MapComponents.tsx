@@ -15,10 +15,10 @@ const GLOBAL_CSS = `
   @keyframes slideIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:translateX(0); } }
 
   .ss-card          { animation: fadeUp 0.45s cubic-bezier(.22,1,.36,1) both; }
-  .ss-row:hover     { background: #0f1117 !important; }
+  .ss-row:hover     { background: var(--md-surface-hi) !important; }
   .ss-gridcard:hover{ transform:translateY(-3px); box-shadow:0 12px 32px rgba(0,0,0,.45) !important; }
-  .ss-pill:hover    { background:#2a2547 !important; }
-  .ss-close:hover   { background:#2a2547 !important; }
+  .ss-pill:hover    { background:var(--md-pill-hover) !important; }
+  .ss-close:hover   { background:var(--md-pill-hover) !important; }
   .ss-finding       { animation: slideIn 0.3s ease both; }
 `;
 
@@ -30,19 +30,19 @@ function GlobalStyles() {
    DESIGN TOKENS
 ───────────────────────────────────────────── */
 const T = {
-  bg       : "#0C0B14",
-  surface  : "#13111F",
-  surfaceHi: "#1A1830",
-  border   : "rgba(255,255,255,0.07)",
-  borderHi : "rgba(139,124,255,0.3)",
+  bg       : "var(--md-bg)",
+  surface  : "var(--md-surface)",
+  surfaceHi: "var(--md-surface-hi)",
+  border   : "var(--md-border)",
+  borderHi : "var(--md-border-hi)",
   accent   : "#8B7CFF",
   accentDim: "#5D52CC",
   green    : "#3ECF8E",
   amber    : "#F59E0B",
   red      : "#F87171",
-  textPri  : "#F0EEF8",
-  textSec  : "#9492A8",
-  textDim  : "#5A5870",
+  textPri  : "var(--md-text-pri)",
+  textSec  : "var(--md-text-sec)",
+  textDim  : "var(--md-text-dim)",
   mono     : "'IBM Plex Mono', monospace",
   display  : "'Playfair Display', serif",
   body     : "'Plus Jakarta Sans', sans-serif",
@@ -83,7 +83,7 @@ export function IntensityBar({ score }: { score: number }) {
   const c = scoreColor(score);
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <div style={{ flex: 1, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+      <div style={{ flex: 1, height: 4, background: "var(--md-track)", borderRadius: 2, overflow: "hidden" }}>
         <div style={{
           width: `${score * 10}%`, height: "100%", background: c,
           borderRadius: 2, transition: "width 0.6s cubic-bezier(.22,1,.36,1)",
@@ -328,7 +328,7 @@ export function MapResultCard({ entry }: { entry: MapEntry }) {
         )}
 
         {/* Intensity */}
-        <div style={{ padding: "14px 22px", background: "rgba(0,0,0,0.2)" }}>
+        <div style={{ padding: "14px 22px", background: "var(--md-footer-bg)" }}>
           <SectionLabel>Information Density</SectionLabel>
           <IntensityBar score={d.intensity_score} />
         </div>

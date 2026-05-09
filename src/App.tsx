@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type CSSProperties } from "react";
 import { createClient } from "@supabase/supabase-js";
 import type { AnalysisLens, MapEntry, MapDescription } from "./mapTypes";
 import { buildMapSystemPrompt, extractDomain } from "./mapTypes";
@@ -23,6 +23,7 @@ function incrementUsage(): void {
 }
 
 type View = "map" | "grid" | "list";
+type ThemeMode = "light" | "dark";
 
 const ANALYSIS_LENSES: { name: AnalysisLens; helper: string }[] = [
   { name: "Website Summary", helper: "Audience, content, navigation" },
@@ -30,6 +31,45 @@ const ANALYSIS_LENSES: { name: AnalysisLens; helper: string }[] = [
   { name: "Competitor View", helper: "Positioning, strengths, gaps" },
   { name: "Partnership View", helper: "Fit, integrations, channels" },
 ];
+
+const EXAMPLE_URLS = [
+  { label: "Try Stripe", value: "https://stripe.com" },
+  { label: "Try Shopify", value: "https://shopify.com" },
+  { label: "Try Airbnb", value: "https://airbnb.com" },
+];
+
+const THEMES: Record<ThemeMode, Record<string, string>> = {
+  light: {
+    "--md-bg": "linear-gradient(135deg, #FBFAF6 0%, #F1F0FF 46%, #EAF7F3 100%)",
+    "--md-surface": "#FFFFFF",
+    "--md-surface-hi": "#F5F3FF",
+    "--md-border": "rgba(83,74,183,0.14)",
+    "--md-border-hi": "rgba(83,74,183,0.26)",
+    "--md-text-pri": "#201C35",
+    "--md-text-sec": "#534F68",
+    "--md-text-dim": "#817C95",
+    "--md-track": "rgba(83,74,183,0.10)",
+    "--md-footer-bg": "#F8F7FC",
+    "--md-pill-hover": "#EEEDFE",
+  },
+  dark: {
+    "--md-bg": "#0C0B14",
+    "--md-surface": "#13111F",
+    "--md-surface-hi": "#1A1830",
+    "--md-border": "rgba(255,255,255,0.07)",
+    "--md-border-hi": "rgba(139,124,255,0.3)",
+    "--md-text-pri": "#F0EEF8",
+    "--md-text-sec": "#9492A8",
+    "--md-text-dim": "#5A5870",
+    "--md-track": "rgba(255,255,255,0.06)",
+    "--md-footer-bg": "rgba(0,0,0,0.2)",
+    "--md-pill-hover": "#2a2547",
+  },
+};
+
+function getInitialTheme(): ThemeMode {
+  return localStorage.getItem("map_theme") === "dark" ? "dark" : "light";
+}
 
 function cleanFinding(finding: string): string {
   return finding.replace(/\s+/g, " ").trim();
@@ -83,6 +123,14 @@ export default function App() {
   const [usageCount, setUsageCount] = useState(getUsageCount());
   const [showPaywall, setShowPaywall] = useState(false);
   const [analysisLens, setAnalysisLens] = useState<AnalysisLens>("Website Summary");
+  const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
+
+  useEffect(() => {
+    localStorage.setItem("map_theme", theme);
+  }, [theme]);
+
+  const isLight = theme === "light";
+  const themeVars = THEMES[theme] as CSSProperties;
 
   useEffect(() => {
     if (view !== "map") fetchEntries();
@@ -278,8 +326,9 @@ export default function App() {
   return (
     <div
       style={{
+        ...themeVars,
         minHeight: "100vh",
-        background: "#0C0B14",
+        background: "var(--md-bg)",
         fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
         position: "relative",
         overflow: "hidden",
@@ -305,10 +354,10 @@ export default function App() {
       {/* ── Navbar ── */}
       <nav
         style={{
-          background    : "rgba(13,12,22,0.85)",
+          background    : isLight ? "rgba(255,255,255,0.82)" : "rgba(13,12,22,0.85)",
           backdropFilter: "blur(20px) saturate(180%)",
           WebkitBackdropFilter: "blur(20px) saturate(180%)",
-          borderBottom  : "1px solid rgba(255,255,255,0.07)",
+          borderBottom  : `1px solid ${isLight ? "rgba(83,74,183,0.14)" : "rgba(255,255,255,0.07)"}`,
           padding       : "0 2rem",
           height        : 62,
           display       : "flex",
@@ -333,15 +382,16 @@ export default function App() {
             </svg>
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 15, color: "#F0EEF8", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
+            <span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 15, color: "var(--md-text-pri)", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
               Outskill Hackathon
             </span>
-            <span style={{ fontSize: 10, color: "#5A5870", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" as const }}>
+            <span style={{ fontSize: 10, color: "var(--md-text-dim)", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" as const }}>
               Group 15 • MapDescriber
             </span>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 3, background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: 3, border: "1px solid rgba(255,255,255,0.07)" }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 3, background: isLight ? "rgba(83,74,183,0.08)" : "rgba(255,255,255,0.04)", borderRadius: 12, padding: 3, border: `1px solid ${isLight ? "rgba(83,74,183,0.14)" : "rgba(255,255,255,0.07)"}` }}>
           {(["map", "grid", "list"] as const).map((v) => (
             <button
               key={v}
@@ -365,6 +415,26 @@ export default function App() {
             </button>
           ))}
         </div>
+          <button
+            type="button"
+            onClick={() => setTheme(isLight ? "dark" : "light")}
+            title={isLight ? "Switch to dark theme" : "Switch to light theme"}
+            style={{
+              background: isLight ? "rgba(32,28,53,0.06)" : "rgba(255,255,255,0.05)",
+              border: `1px solid ${isLight ? "rgba(83,74,183,0.18)" : "rgba(255,255,255,0.08)"}`,
+              borderRadius: 12,
+              color: "var(--md-text-pri)",
+              cursor: "pointer",
+              fontSize: 12,
+              fontWeight: 800,
+              padding: "9px 12px",
+              minWidth: 74,
+              fontFamily: "'IBM Plex Mono', monospace",
+            }}
+          >
+            {isLight ? "Light" : "Dark"}
+          </button>
+        </div>
       </nav>
 
       <div style={{ maxWidth: 820, margin: "0 auto", padding: "2.5rem 1.5rem", position: "relative", zIndex: 1 }}>
@@ -386,7 +456,7 @@ export default function App() {
               <h1 style={{
                 fontFamily: "'Playfair Display',serif", fontWeight: 800,
                 fontSize: "clamp(34px,6vw,56px)", lineHeight: 1.05,
-                letterSpacing: "-0.04em", margin: "0 0 18px", color: "#F0EEF8",
+                letterSpacing: "-0.04em", margin: "0 0 18px", color: "var(--md-text-pri)",
               }}>
                 Explore Any Site.<br />
                 <span style={{
@@ -399,7 +469,7 @@ export default function App() {
                   Map Its DNA.
                 </span>
               </h1>
-              <p style={{ fontSize: 15, color: "#9492A8", margin: "0 auto", maxWidth: 460, lineHeight: 1.75 }}>
+              <p style={{ fontSize: 15, color: "var(--md-text-sec)", margin: "0 auto", maxWidth: 460, lineHeight: 1.75 }}>
                 Paste any URL to generate an AI-powered site map — value proposition,
                 navigation structure, semantic tags, product extraction, and information density scoring.
               </p>
@@ -407,8 +477,8 @@ export default function App() {
 
             {/* Analysis lens */}
             <div style={{
-              background: "rgba(255,255,255,0.035)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: isLight ? "rgba(255,255,255,0.72)" : "rgba(255,255,255,0.035)",
+              border: `1px solid ${isLight ? "rgba(83,74,183,0.16)" : "rgba(255,255,255,0.08)"}`,
               borderRadius: 16,
               padding: 14,
               marginBottom: 16,
@@ -431,7 +501,7 @@ export default function App() {
                 }}>
                   Analysis Lens
                 </span>
-                <span style={{ fontSize: 11, color: "#5A5870" }}>
+                <span style={{ fontSize: 11, color: "var(--md-text-dim)" }}>
                   Shapes the AI report
                 </span>
               </div>
@@ -448,8 +518,8 @@ export default function App() {
                         setError("");
                       }}
                       style={{
-                        background: active ? "rgba(139,124,255,0.16)" : "rgba(255,255,255,0.03)",
-                        border: active ? "1px solid rgba(139,124,255,0.45)" : "1px solid rgba(255,255,255,0.07)",
+                        background: active ? "rgba(139,124,255,0.16)" : isLight ? "rgba(255,255,255,0.72)" : "rgba(255,255,255,0.03)",
+                        border: active ? "1px solid rgba(139,124,255,0.45)" : `1px solid ${isLight ? "rgba(83,74,183,0.13)" : "rgba(255,255,255,0.07)"}`,
                         borderRadius: 10,
                         padding: "10px 12px",
                         cursor: "pointer",
@@ -461,12 +531,12 @@ export default function App() {
                         display: "block",
                         fontSize: 12,
                         fontWeight: 800,
-                        color: active ? "#F0EEF8" : "#C9C5E8",
+                        color: active ? "var(--md-text-pri)" : "var(--md-text-sec)",
                         marginBottom: 3,
                       }}>
                         {lens.name}
                       </span>
-                      <span style={{ display: "block", fontSize: 10, color: active ? "#AFA9EC" : "#5A5870", lineHeight: 1.35 }}>
+                      <span style={{ display: "block", fontSize: 10, color: active ? "#7F77DD" : "var(--md-text-dim)", lineHeight: 1.35 }}>
                         {lens.helper}
                       </span>
                     </button>
@@ -477,7 +547,7 @@ export default function App() {
 
             {/* Search bar */}
             <div style={{
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(139,124,255,0.3)",
+              background: isLight ? "rgba(255,255,255,0.86)" : "rgba(255,255,255,0.04)", border: "1px solid rgba(139,124,255,0.3)",
               backdropFilter: "blur(12px)",
               borderRadius: 18, padding: "6px 6px 6px 20px",
               display: "flex", alignItems: "center", gap: 10,
@@ -497,7 +567,7 @@ export default function App() {
                 style={{
                   flex: 1, border: "none", outline: "none",
                   background: "transparent", fontSize: 14,
-                  color: "#F0EEF8", padding: "12px 0", fontFamily: "inherit",
+                  color: "var(--md-text-pri)", padding: "12px 0", fontFamily: "inherit",
                 }}
               />
               <button
@@ -516,6 +586,42 @@ export default function App() {
               >
                 {loading ? "Mapping…" : "Map It ↗"}
               </button>
+            </div>
+
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              flexWrap: "wrap",
+              margin: "-12px 0 28px",
+              animation: "fadeInUp 0.6s ease-out 0.2s both",
+            }}>
+              {EXAMPLE_URLS.map((example) => (
+                <button
+                  key={example.value}
+                  type="button"
+                  onClick={() => {
+                    setUrl(example.value);
+                    setResult(null);
+                    setError("");
+                  }}
+                  style={{
+                    background: isLight ? "rgba(255,255,255,0.68)" : "rgba(139,124,255,0.08)",
+                    border: `1px solid ${isLight ? "rgba(83,74,183,0.16)" : "rgba(139,124,255,0.2)"}`,
+                    borderRadius: 999,
+                    color: isLight ? "#534AB7" : "#AFA9EC",
+                    cursor: "pointer",
+                    fontSize: 11,
+                    fontWeight: 800,
+                    padding: "7px 12px",
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    letterSpacing: "0.01em",
+                  }}
+                >
+                  {example.label}
+                </button>
+              ))}
             </div>
 
             {error && (
