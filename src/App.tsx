@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
-import type { MapEntry, MapDescription } from "./mapTypes";
-import { MAP_SYSTEM_PROMPT, extractDomain } from "./mapTypes";
+import type { AnalysisLens, MapEntry, MapDescription } from "./mapTypes";
+import { buildMapSystemPrompt, extractDomain } from "./mapTypes";
 import { Spinner, MapResultCard, GridCard, DetailModal } from "./MapComponents";
 
 const supabase = createClient(
@@ -24,6 +24,53 @@ function incrementUsage(): void {
 
 type View = "map" | "grid" | "list";
 
+const ANALYSIS_LENSES: { name: AnalysisLens; helper: string }[] = [
+  { name: "Website Summary", helper: "Audience, content, navigation" },
+  { name: "Investor View", helper: "Growth, moat, risks" },
+  { name: "Competitor View", helper: "Positioning, strengths, gaps" },
+  { name: "Partnership View", helper: "Fit, integrations, channels" },
+];
+
+function cleanFinding(finding: string): string {
+  return finding.replace(/\s+/g, " ").trim();
+}
+
+function isUsefulFinding(finding: string): boolean {
+  const text = cleanFinding(finding);
+  if (text.length < 18 || text.length > 240) return false;
+
+  const noisyPatterns = [
+    /\btoken(s)?\b/i,
+    /\bcookie(s)?\b/i,
+    /\btracking\b/i,
+    /\bcsrf\b/i,
+    /\bid[:#\s-]*[a-z0-9_-]{8,}/i,
+    /\b(add to cart|cart|wishlist)\b/i,
+    /\b(electric kettle|subscription for streaming)\b/i,
+    /^\s*[$₹€£¥]\s?\d+/,
+  ];
+
+  return !noisyPatterns.some((pattern) => pattern.test(text));
+}
+
+function normalizeDescription(desc: MapDescription, analysisLens: AnalysisLens): MapDescription {
+  const keyFindings = (desc.key_findings || [])
+    .map(cleanFinding)
+    .filter(isUsefulFinding)
+    .slice(0, 5);
+
+  return {
+    ...desc,
+    analysis_lens: analysisLens,
+    prompt_version: 2,
+    navigation_map: (desc.navigation_map || []).map(cleanFinding).filter(Boolean).slice(0, 8),
+    semantic_tags: (desc.semantic_tags || []).map(cleanFinding).filter(Boolean).slice(0, 8),
+    key_findings: keyFindings,
+    products: Array.isArray(desc.products) ? desc.products.slice(0, 12) : [],
+    intensity_score: Math.min(10, Math.max(1, Number(desc.intensity_score) || 5)),
+  };
+}
+
 export default function App() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,6 +82,7 @@ export default function App() {
   const [selected, setSelected] = useState<MapEntry | null>(null);
   const [usageCount, setUsageCount] = useState(getUsageCount());
   const [showPaywall, setShowPaywall] = useState(false);
+  const [analysisLens, setAnalysisLens] = useState<AnalysisLens>("Website Summary");
 
   useEffect(() => {
     if (view !== "map") fetchEntries();
@@ -76,11 +124,17 @@ export default function App() {
 
     try {
       // ── Cache check ──
-      const { data: cached } = await supabase
+      const { data: cachedRows } = await supabase
         .from("web_maps")
         .select("id, url, domain, description, created_at")
         .eq("url", normalized)
-        .maybeSingle();
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      const cached = (cachedRows || []).find((row: any) => {
+        const description = row.description as MapDescription;
+        return description?.prompt_version === 2 && description?.analysis_lens === analysisLens;
+      });
 
       if (cached) {
         setResult({
@@ -138,15 +192,19 @@ export default function App() {
           max_tokens: 2000,
           temperature: 0,
           messages: [
-            { role: "system", content: MAP_SYSTEM_PROMPT },
-            { role: "user", content: markdown },
+            { role: "system", content: buildMapSystemPrompt(analysisLens) },
+            {
+              role: "user",
+              content: `Website URL: ${normalized}\nSelected lens: ${analysisLens}\n\nScraped content:\n${markdown}`,
+            },
           ],
         }),
       });
       const aiData = await ai.json();
       const raw = aiData.choices?.[0]?.message?.content || "{}";
-      const desc: MapDescription = JSON.parse(
-        raw.replace(/```json|```/g, "").trim()
+      const desc: MapDescription = normalizeDescription(
+        JSON.parse(raw.replace(/```json|```/g, "").trim()),
+        analysisLens
       );
 
       // ── Generate embedding ──
@@ -345,6 +403,76 @@ export default function App() {
                 Paste any URL to generate an AI-powered site map — value proposition,
                 navigation structure, semantic tags, product extraction, and information density scoring.
               </p>
+            </div>
+
+            {/* Analysis lens */}
+            <div style={{
+              background: "rgba(255,255,255,0.035)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 16,
+              padding: 14,
+              marginBottom: 16,
+              animation: "fadeInUp 0.6s ease-out 0.1s both",
+            }}>
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 12,
+                marginBottom: 10,
+              }}>
+                <span style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: "#AFA9EC",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase" as const,
+                  fontFamily: "'IBM Plex Mono', monospace",
+                }}>
+                  Analysis Lens
+                </span>
+                <span style={{ fontSize: 11, color: "#5A5870" }}>
+                  Shapes the AI report
+                </span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 8 }}>
+                {ANALYSIS_LENSES.map((lens) => {
+                  const active = analysisLens === lens.name;
+                  return (
+                    <button
+                      key={lens.name}
+                      type="button"
+                      onClick={() => {
+                        setAnalysisLens(lens.name);
+                        setResult(null);
+                        setError("");
+                      }}
+                      style={{
+                        background: active ? "rgba(139,124,255,0.16)" : "rgba(255,255,255,0.03)",
+                        border: active ? "1px solid rgba(139,124,255,0.45)" : "1px solid rgba(255,255,255,0.07)",
+                        borderRadius: 10,
+                        padding: "10px 12px",
+                        cursor: "pointer",
+                        textAlign: "left" as const,
+                        transition: "all 0.2s ease",
+                      }}
+                    >
+                      <span style={{
+                        display: "block",
+                        fontSize: 12,
+                        fontWeight: 800,
+                        color: active ? "#F0EEF8" : "#C9C5E8",
+                        marginBottom: 3,
+                      }}>
+                        {lens.name}
+                      </span>
+                      <span style={{ display: "block", fontSize: 10, color: active ? "#AFA9EC" : "#5A5870", lineHeight: 1.35 }}>
+                        {lens.helper}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Search bar */}
