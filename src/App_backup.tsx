@@ -221,14 +221,16 @@ export default function App() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#0C0B14",
-        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+        background: "linear-gradient(135deg, #F8F7FF 0%, #EEEDFE 30%, #F0EEFF 60%, #F8F7FF 100%)",
+        backgroundSize: "400% 400%",
+        animation: "gradientShift 15s ease infinite",
+        fontFamily: "'DM Sans', system-ui, sans-serif",
         position: "relative",
         overflow: "hidden",
       }}
     >
       <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet"
       />
 
@@ -247,18 +249,18 @@ export default function App() {
       {/* ── Navbar ── */}
       <nav
         style={{
-          background    : "rgba(13,12,22,0.85)",
+          background: "rgba(255,255,255,0.75)",
           backdropFilter: "blur(20px) saturate(180%)",
           WebkitBackdropFilter: "blur(20px) saturate(180%)",
-          borderBottom  : "1px solid rgba(255,255,255,0.07)",
-          padding       : "0 2rem",
-          height        : 62,
-          display       : "flex",
-          alignItems    : "center",
+          borderBottom: "1px solid rgba(83,74,183,0.08)",
+          padding: "0 2rem",
+          height: 62,
+          display: "flex",
+          alignItems: "center",
           justifyContent: "space-between",
-          position      : "sticky",
-          top           : 0,
-          zIndex        : 20,
+          position: "sticky",
+          top: 0,
+          zIndex: 20,
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -275,32 +277,31 @@ export default function App() {
             </svg>
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 15, color: "#F0EEF8", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
+            <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15, color: "#1a1744", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
               Outskill Hackathon
             </span>
-            <span style={{ fontSize: 10, color: "#5A5870", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" as const }}>
+            <span style={{ fontSize: 10, color: "#8883C4", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
               Group 15 • MapDescriber
             </span>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 3, background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: 3, border: "1px solid rgba(255,255,255,0.07)" }}>
+        <div style={{ display: "flex", gap: 3, background: "rgba(238,237,254,0.7)", borderRadius: 12, padding: 3, border: "1px solid rgba(175,169,236,0.3)" }}>
           {(["map", "grid", "list"] as const).map((v) => (
             <button
               key={v}
               onClick={() => setView(v)}
               style={{
-                background: view === v ? "rgba(139,124,255,0.15)" : "transparent",
-                border: view === v ? "1px solid rgba(139,124,255,0.3)" : "1px solid transparent",
+                background: view === v ? "white" : "transparent",
+                border: "none",
                 borderRadius: 9,
                 padding: "7px 16px",
                 fontSize: 12,
                 fontWeight: view === v ? 700 : 500,
-                color: view === v ? "#8B7CFF" : "#5A5870",
+                color: view === v ? "#534AB7" : "#8883C4",
                 cursor: "pointer",
-                boxShadow: "none",
+                boxShadow: view === v ? "0 2px 8px rgba(83,74,183,0.12)" : "none",
                 transition: "all 0.2s cubic-bezier(0.4,0,0.2,1)",
                 letterSpacing: "0.01em",
-                fontFamily: "'IBM Plex Mono', monospace",
               }}
             >
               {viewLabels[v]}
@@ -326,13 +327,13 @@ export default function App() {
                 AI-Powered Web Cartography
               </div>
               <h1 style={{
-                fontFamily: "'Playfair Display',serif", fontWeight: 800,
+                fontFamily: "'Syne',sans-serif", fontWeight: 800,
                 fontSize: "clamp(34px,6vw,56px)", lineHeight: 1.05,
-                letterSpacing: "-0.04em", margin: "0 0 18px", color: "#F0EEF8",
+                letterSpacing: "-0.04em", margin: "0 0 18px", color: "#1a1744",
               }}>
                 Explore Any Site.<br />
                 <span style={{
-                  background: "linear-gradient(135deg, #8B7CFF 0%, #534AB7 40%, #3D35A0 70%, #8B7CFF 100%)",
+                  background: "linear-gradient(135deg, #7F77DD 0%, #534AB7 40%, #3D35A0 70%, #7F77DD 100%)",
                   backgroundSize: "200% auto",
                   animation: "shimmer 3s linear infinite",
                   WebkitBackgroundClip: "text",
@@ -341,7 +342,7 @@ export default function App() {
                   Map Its DNA.
                 </span>
               </h1>
-              <p style={{ fontSize: 15, color: "#9492A8", margin: "0 auto", maxWidth: 460, lineHeight: 1.75 }}>
+              <p style={{ fontSize: 15, color: "#6B6B8A", margin: "0 auto", maxWidth: 460, lineHeight: 1.75 }}>
                 Paste any URL to generate an AI-powered site map — value proposition,
                 navigation structure, semantic tags, product extraction, and information density scoring.
               </p>
@@ -349,12 +350,12 @@ export default function App() {
 
             {/* Search bar */}
             <div style={{
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(139,124,255,0.3)",
+              background: "rgba(255,255,255,0.9)", border: "1.5px solid rgba(175,169,236,0.5)",
               backdropFilter: "blur(12px)",
               borderRadius: 18, padding: "6px 6px 6px 20px",
               display: "flex", alignItems: "center", gap: 10,
               marginBottom: 28,
-              boxShadow: "0 4px 30px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.4)",
+              boxShadow: "0 4px 30px rgba(83,74,183,0.10), 0 1px 3px rgba(83,74,183,0.06)",
               transition: "all 0.3s ease",
               animation: "fadeInUp 0.6s ease-out 0.15s both",
             }}>
@@ -369,7 +370,7 @@ export default function App() {
                 style={{
                   flex: 1, border: "none", outline: "none",
                   background: "transparent", fontSize: 14,
-                  color: "#F0EEF8", padding: "12px 0", fontFamily: "inherit",
+                  color: "#1a1744", padding: "12px 0", fontFamily: "inherit",
                 }}
               />
               <button
@@ -429,7 +430,7 @@ export default function App() {
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <div>
-                <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 24, margin: "0 0 4px", color: "#F0EEF8", letterSpacing: "-0.02em" }}>
+                <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, margin: "0 0 4px", color: "#1a1744", letterSpacing: "-0.02em" }}>
                   Mapped Sites
                 </h2>
                 <p style={{ fontSize: 13, color: "#8883C4", margin: 0 }}>
@@ -475,7 +476,7 @@ export default function App() {
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <div>
-                <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 24, margin: "0 0 4px", color: "#F0EEF8" }}>
+                <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24, margin: "0 0 4px", color: "#1a1744" }}>
                   Site Directory
                 </h2>
                 <p style={{ fontSize: 13, color: "#8883C4", margin: 0 }}>{entries.length} entries</p>
@@ -503,48 +504,49 @@ export default function App() {
             )}
 
             {!entriesLoading && entries.length > 0 && (
-              <div style={{ background: "#13111F", borderRadius: 14, border: "1px solid rgba(255,255,255,0.07)", overflow: "hidden" }}>
+              <div style={{ background: "white", borderRadius: 14, border: "1px solid #EEEDFE", overflow: "hidden" }}>
                 {/* Table header */}
                 <div style={{
                   display: "grid", gridTemplateColumns: "2fr 3fr 1fr 80px",
-                  padding: "10px 16px", background: "rgba(255,255,255,0.03)",
-                  borderBottom: "1px solid rgba(255,255,255,0.07)", gap: 12,
+                  padding: "10px 16px", background: "#FAFAFE",
+                  borderBottom: "1px solid #EEEDFE", gap: 12,
                 }}>
                   {["Site", "Value Prop", "Density", ""].map((h) => (
-                    <span key={h} style={{ fontSize: 10, fontWeight: 700, color: "#5A5870", letterSpacing: "0.08em", textTransform: "uppercase" as const, fontFamily: "'IBM Plex Mono',monospace" }}>{h}</span>
+                    <span key={h} style={{ fontSize: 10, fontWeight: 700, color: "#AFA9EC", letterSpacing: "0.08em", textTransform: "uppercase" }}>{h}</span>
                   ))}
                 </div>
                 {entries.map((e) => (
                   <div
                     key={e.id}
                     onClick={() => setSelected(e)}
-                    className="ss-row"
                     style={{
                       display: "grid", gridTemplateColumns: "2fr 3fr 1fr 80px",
-                      padding: "12px 16px", borderBottom: "0.5px solid rgba(255,255,255,0.05)",
-                      cursor: "pointer", gap: 12, transition: "background 0.15s",
-                      alignItems: "center", background: "transparent",
+                      padding: "12px 16px", borderBottom: "0.5px solid #EEEDFE",
+                      cursor: "pointer", gap: 12, transition: "background 0.1s",
+                      alignItems: "center",
                     }}
+                    onMouseEnter={(ev) => (ev.currentTarget.style.background = "#FAFAFE")}
+                    onMouseLeave={(ev) => (ev.currentTarget.style.background = "white")}
                   >
                     <div>
-                      <p style={{ fontWeight: 600, fontSize: 13, margin: 0, color: "#F0EEF8", lineHeight: 1.3 }}>{e.description.site_title}</p>
-                      <p style={{ fontSize: 11, color: "#5A5870", margin: "2px 0 0", fontFamily: "'IBM Plex Mono',monospace" }}>{e.domain}</p>
+                      <p style={{ fontWeight: 600, fontSize: 13, margin: 0, color: "#1a1744", lineHeight: 1.3 }}>{e.description.site_title}</p>
+                      <p style={{ fontSize: 11, color: "#8883C4", margin: "2px 0 0" }}>{e.domain}</p>
                     </div>
-                    <p style={{ fontSize: 12, color: "#9492A8", margin: 0, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
+                    <p style={{ fontSize: 12, color: "#6B6B8A", margin: 0, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {e.description.core_value_prop}
                     </p>
                     <span style={{
-                      fontSize: 12, fontWeight: 700, fontFamily: "'IBM Plex Mono',monospace",
-                      color: e.description.intensity_score >= 7 ? "#3ECF8E" : e.description.intensity_score >= 4 ? "#8B7CFF" : "#F59E0B",
+                      fontSize: 12, fontWeight: 700,
+                      color: e.description.intensity_score >= 7 ? "#1D9E75" : e.description.intensity_score >= 4 ? "#534AB7" : "#EF9F27",
                     }}>
                       {e.description.intensity_score}/10
                     </span>
                     <button
                       onClick={(ev) => { ev.stopPropagation(); if (e.id) handleDelete(e.id); }}
                       style={{
-                        background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.25)",
+                        background: "#FCEBEB", border: "1px solid #F09595",
                         borderRadius: 6, padding: "4px 10px", fontSize: 11,
-                        color: "#F87171", cursor: "pointer", fontFamily: "'IBM Plex Mono',monospace",
+                        color: "#A32D2D", cursor: "pointer",
                       }}
                     >Del</button>
                   </div>
@@ -562,11 +564,11 @@ export default function App() {
       {!isAdmin && (
         <div style={{
           position: "fixed", bottom: 16, right: 16, zIndex: 30,
-          background: "#13111F", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10,
-          padding: "8px 14px", fontSize: 11, color: "#9492A8",
-          boxShadow: "0 2px 12px rgba(0,0,0,.4)", fontFamily: "'IBM Plex Mono',monospace",
+          background: "white", border: "1px solid #EEEDFE", borderRadius: 10,
+          padding: "8px 14px", fontSize: 11, color: "#8883C4",
+          boxShadow: "0 2px 12px rgba(83,74,183,0.10)",
         }}>
-          Free scans: <strong style={{ color: usageCount >= FREE_LIMIT ? "#F87171" : "#8B7CFF" }}>{Math.max(0, FREE_LIMIT - usageCount)}</strong> / {FREE_LIMIT} remaining
+          Free scans: <strong style={{ color: usageCount >= FREE_LIMIT ? "#A32D2D" : "#534AB7" }}>{Math.max(0, FREE_LIMIT - usageCount)}</strong> / {FREE_LIMIT} remaining
         </div>
       )}
 
@@ -578,17 +580,15 @@ export default function App() {
           display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
         }}>
           <div style={{
-            background: "#13111F", borderRadius: 20, maxWidth: 440, width: "100%",
-            padding: "40px 32px", textAlign: "center" as const,
-            border: "1px solid rgba(139,124,255,0.2)",
-            boxShadow: "0 32px 80px rgba(0,0,0,.8)",
+            background: "white", borderRadius: 20, maxWidth: 440, width: "100%",
+            padding: "40px 32px", textAlign: "center",
+            boxShadow: "0 20px 60px rgba(83,74,183,0.3)",
           }}>
             <div style={{
               width: 56, height: 56, borderRadius: 16,
-              background: "linear-gradient(135deg,#8B7CFF,#534AB7)",
+              background: "linear-gradient(135deg,#7F77DD,#534AB7)",
               display: "flex", alignItems: "center", justifyContent: "center",
               margin: "0 auto 20px",
-              boxShadow: "0 8px 24px rgba(139,124,255,0.3)",
             }}>
               <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -596,24 +596,24 @@ export default function App() {
               </svg>
             </div>
             <h2 style={{
-              fontFamily: "'Playfair Display',serif", fontWeight: 800,
-              fontSize: 24, margin: "0 0 8px", color: "#F0EEF8",
+              fontFamily: "'Syne',sans-serif", fontWeight: 800,
+              fontSize: 24, margin: "0 0 8px", color: "#1a1744",
             }}>Free Tier Reached</h2>
-            <p style={{ fontSize: 14, color: "#9492A8", margin: "0 0 24px", lineHeight: 1.6 }}>
-              You've used all {FREE_LIMIT} free scans. Upgrade to <strong style={{ color: "#8B7CFF" }}>MapDescriber Pro</strong> for unlimited site mapping, product extraction, and cached results.
+            <p style={{ fontSize: 14, color: "#6B6B8A", margin: "0 0 24px", lineHeight: 1.6 }}>
+              You've used all {FREE_LIMIT} free scans. Upgrade to <strong style={{ color: "#534AB7" }}>MapDescriber Pro</strong> for unlimited site mapping, product extraction, and cached results.
             </p>
             <button style={{
-              background: "linear-gradient(135deg,#8B7CFF,#534AB7)",
+              background: "linear-gradient(135deg,#7F77DD,#534AB7)",
               color: "white", border: "none", borderRadius: 12,
               padding: "14px 32px", fontSize: 15, fontWeight: 700,
               cursor: "pointer", width: "100%", marginBottom: 12,
-              boxShadow: "0 4px 16px rgba(139,124,255,0.35)",
-              letterSpacing: "0.02em", fontFamily: "'Plus Jakarta Sans',sans-serif",
+              boxShadow: "0 4px 16px rgba(83,74,183,0.35)",
+              letterSpacing: "0.02em",
             }}>Upgrade to Pro — ₹499/month</button>
             <button onClick={() => setShowPaywall(false)} style={{
               background: "transparent", border: "none",
-              fontSize: 13, color: "#5A5870", cursor: "pointer",
-              padding: "8px 16px", fontFamily: "'Plus Jakarta Sans',sans-serif",
+              fontSize: 13, color: "#8883C4", cursor: "pointer",
+              padding: "8px 16px",
             }}>Maybe later</button>
           </div>
         </div>
