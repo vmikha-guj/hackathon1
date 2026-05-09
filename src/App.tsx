@@ -432,7 +432,7 @@ export default function App() {
               fontFamily: "'IBM Plex Mono', monospace",
             }}
           >
-            {isLight ? "Light" : "Dark"}
+            {isLight ? "Dark Mode" : "Light Mode"}
           </button>
         </div>
       </nav>
