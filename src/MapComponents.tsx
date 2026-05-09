@@ -167,6 +167,76 @@ function Divider() {
 }
 
 /* ─────────────────────────────────────────────
+   EXPORT HELPERS
+───────────────────────────────────────────── */
+function dl(content: string, filename: string, mime: string) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([content], { type: mime }));
+  a.download = filename;
+  a.click();
+}
+
+function slug(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40);
+}
+
+function exportMD(entry: MapEntry) {
+  const d = entry.description;
+  const lines = [
+    `# ${d.site_title}`,
+    ``,
+    `**URL:** ${entry.url}`,
+    `**Domain:** ${entry.domain}`,
+    `**Analysis Lens:** ${d.analysis_lens || "Website Summary"}`,
+    `**Information Density:** ${d.intensity_score}/10`,
+    ``,
+    `## Core Value Proposition`,
+    d.core_value_prop,
+    ``,
+  ];
+  if (d.navigation_map?.length) {
+    lines.push(`## Navigation Map`);
+    d.navigation_map.forEach((n, i) => lines.push(`${i + 1}. ${n}`));
+    lines.push(``);
+  }
+  if (d.key_findings?.length) {
+    lines.push(`## Key Findings`);
+    d.key_findings.forEach(f => lines.push(`- ${f}`));
+    lines.push(``);
+  }
+  if (d.semantic_tags?.length) {
+    lines.push(`## Semantic Tags`);
+    lines.push(d.semantic_tags.map(t => `#${t}`).join("  "));
+    lines.push(``);
+  }
+  if (d.products?.length) {
+    lines.push(`## Products`);
+    lines.push(`| Product | Price |`);
+    lines.push(`|---------|-------|`);
+    d.products.forEach(p => lines.push(`| ${p.name} | ${p.price} |`));
+    lines.push(``);
+  }
+  dl(lines.join("\n"), `${slug(d.site_title || entry.domain)}.md`, "text/markdown");
+}
+
+function exportCSV(entry: MapEntry) {
+  const d = entry.description;
+  const header = ["URL", "Domain", "Title", "Lens", "Core Value", "Key Findings", "Tags", "Density", "Scraped At"];
+  const row = [
+    entry.url,
+    entry.domain,
+    d.site_title,
+    d.analysis_lens || "Website Summary",
+    `"${(d.core_value_prop || "").replace(/"/g, '""')}"`,
+    `"${(d.key_findings || []).join("; ").replace(/"/g, '""')}"`,
+    `"${(d.semantic_tags || []).join(", ")}"`,
+    String(d.intensity_score),
+    entry.created_at ? new Date(entry.created_at).toLocaleString() : new Date().toLocaleString(),
+  ];
+  dl([header.join(","), row.join(",")].join("\n"), `${slug(d.site_title || entry.domain)}.csv`, "text/csv");
+}
+
+/* ─────────────────────────────────────────────
    MAP RESULT CARD (scrape view)
 ───────────────────────────────────────────── */
 export function MapResultCard({ entry }: { entry: MapEntry }) {
@@ -207,20 +277,42 @@ export function MapResultCard({ entry }: { entry: MapEntry }) {
               overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
             }}>{entry.url}</a>
           </div>
-          {/* Score badge */}
-          <div style={{
-            background   : `rgba(${sc === T.green ? "62,207,142" : sc === T.accent ? "139,124,255" : sc === T.amber ? "245,158,11" : "248,113,113"},0.08)`,
-            border       : `1px solid ${sc}33`,
-            borderRadius : 10,
-            padding      : "10px 14px",
-            textAlign    : "center" as const,
-            flexShrink   : 0,
-          }}>
-            <div style={{ fontSize: 24, fontWeight: 800, color: sc, fontFamily: T.mono, lineHeight: 1 }}>
-              {d.intensity_score}
+          {/* Score badge + Export buttons */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
+            <div style={{
+              background   : `rgba(${sc === T.green ? "62,207,142" : sc === T.accent ? "139,124,255" : sc === T.amber ? "245,158,11" : "248,113,113"},0.08)`,
+              border       : `1px solid ${sc}33`,
+              borderRadius : 10,
+              padding      : "10px 14px",
+              textAlign    : "center" as const,
+            }}>
+              <div style={{ fontSize: 24, fontWeight: 800, color: sc, fontFamily: T.mono, lineHeight: 1 }}>
+                {d.intensity_score}
+              </div>
+              <div style={{ fontSize: 8, fontWeight: 700, color: sc, letterSpacing: "0.1em", textTransform: "uppercase" as const, marginTop: 3 }}>
+                density
+              </div>
             </div>
-            <div style={{ fontSize: 8, fontWeight: 700, color: sc, letterSpacing: "0.1em", textTransform: "uppercase" as const, marginTop: 3 }}>
-              density
+            {/* Export buttons */}
+            <div style={{ display: "flex", gap: 6 }}>
+              <button
+                onClick={() => exportMD(entry)}
+                title="Save as Markdown"
+                style={{
+                  background: "rgba(139,124,255,0.10)", border: "1px solid rgba(139,124,255,0.3)",
+                  borderRadius: 7, padding: "5px 10px", cursor: "pointer",
+                  fontSize: 11, fontWeight: 700, color: T.accent, fontFamily: T.mono,
+                  transition: "background 0.15s",
+                }}>↓ MD</button>
+              <button
+                onClick={() => exportCSV(entry)}
+                title="Save as CSV"
+                style={{
+                  background: "rgba(62,207,142,0.08)", border: "1px solid rgba(62,207,142,0.3)",
+                  borderRadius: 7, padding: "5px 10px", cursor: "pointer",
+                  fontSize: 11, fontWeight: 700, color: T.green, fontFamily: T.mono,
+                  transition: "background 0.15s",
+                }}>↓ CSV</button>
             </div>
           </div>
         </div>

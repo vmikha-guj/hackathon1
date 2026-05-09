@@ -125,6 +125,7 @@ export default function App() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [analysisLens, setAnalysisLens] = useState<AnalysisLens>("Website Summary");
   const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
+  const [listFilter, setListFilter] = useState("");
 
   useEffect(() => {
     localStorage.setItem("map_theme", theme);
@@ -476,14 +477,95 @@ export default function App() {
               </p>
             </div>
 
-            {/* Analysis lens */}
+            {/* Example URLs — now ABOVE the search bar */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              flexWrap: "wrap",
+              marginBottom: 12,
+              animation: "fadeInUp 0.6s ease-out 0.1s both",
+            }}>
+              <span style={{ fontSize: 11, color: "var(--md-text-dim)", fontFamily: "'IBM Plex Mono',monospace", marginRight: 2 }}>Try:</span>
+              {EXAMPLE_URLS.map((example) => (
+                <button
+                  key={example.value}
+                  type="button"
+                  onClick={() => {
+                    setUrl(example.value);
+                    setResult(null);
+                    setError("");
+                  }}
+                  style={{
+                    background: isLight ? "rgba(255,255,255,0.68)" : "rgba(139,124,255,0.08)",
+                    border: `1px solid ${isLight ? "rgba(83,74,183,0.16)" : "rgba(139,124,255,0.2)"}`,
+                    borderRadius: 999,
+                    color: isLight ? "#534AB7" : "#AFA9EC",
+                    cursor: "pointer",
+                    fontSize: 11,
+                    fontWeight: 800,
+                    padding: "7px 12px",
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    letterSpacing: "0.01em",
+                  }}
+                >
+                  {example.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Search bar */}
+            <div style={{
+              background: isLight ? "rgba(255,255,255,0.86)" : "rgba(255,255,255,0.04)", border: "1px solid rgba(139,124,255,0.3)",
+              backdropFilter: "blur(12px)",
+              borderRadius: 18, padding: "6px 6px 6px 20px",
+              display: "flex", alignItems: "center", gap: 10,
+              marginBottom: 16,
+              boxShadow: "0 4px 30px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.4)",
+              transition: "all 0.3s ease",
+              animation: "fadeInUp 0.6s ease-out 0.15s both",
+            }}>
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#AFA9EC" strokeWidth="2" style={{ flexShrink: 0 }}>
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+              </svg>
+              <input
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleMap()}
+                placeholder="https://example.com — paste any URL to map"
+                style={{
+                  flex: 1, border: "none", outline: "none",
+                  background: "transparent", fontSize: 14,
+                  color: "var(--md-text-pri)", padding: "12px 0", fontFamily: "inherit",
+                }}
+              />
+              <button
+                onClick={handleMap}
+                disabled={loading || !url.trim()}
+                className="btn-glow"
+                style={{
+                  background: loading ? "#AFA9EC" : "linear-gradient(135deg,#7F77DD,#534AB7)",
+                  color: "white", border: "none", borderRadius: 13,
+                  padding: "13px 28px", fontSize: 13, fontWeight: 700,
+                  cursor: loading ? "not-allowed" : "pointer",
+                  whiteSpace: "nowrap", letterSpacing: "0.03em",
+                  boxShadow: loading ? "none" : "0 4px 16px rgba(83,74,183,0.35)",
+                  transition: "all 0.25s cubic-bezier(0.4,0,0.2,1)",
+                }}
+              >
+                {loading ? "Mapping…" : "Map It ↗"}
+              </button>
+            </div>
+
+            {/* Analysis Lens — now BELOW the search bar */}
             <div style={{
               background: isLight ? "rgba(255,255,255,0.72)" : "rgba(255,255,255,0.035)",
               border: `1px solid ${isLight ? "rgba(83,74,183,0.16)" : "rgba(255,255,255,0.08)"}`,
               borderRadius: 16,
               padding: 14,
-              marginBottom: 16,
-              animation: "fadeInUp 0.6s ease-out 0.1s both",
+              marginBottom: 28,
+              animation: "fadeInUp 0.6s ease-out 0.2s both",
             }}>
               <div style={{
                 display: "flex",
@@ -544,85 +626,6 @@ export default function App() {
                   );
                 })}
               </div>
-            </div>
-
-            {/* Search bar */}
-            <div style={{
-              background: isLight ? "rgba(255,255,255,0.86)" : "rgba(255,255,255,0.04)", border: "1px solid rgba(139,124,255,0.3)",
-              backdropFilter: "blur(12px)",
-              borderRadius: 18, padding: "6px 6px 6px 20px",
-              display: "flex", alignItems: "center", gap: 10,
-              marginBottom: 28,
-              boxShadow: "0 4px 30px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.4)",
-              transition: "all 0.3s ease",
-              animation: "fadeInUp 0.6s ease-out 0.15s both",
-            }}>
-              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#AFA9EC" strokeWidth="2" style={{ flexShrink: 0 }}>
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-              </svg>
-              <input
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleMap()}
-                placeholder="https://example.com — paste any URL to map"
-                style={{
-                  flex: 1, border: "none", outline: "none",
-                  background: "transparent", fontSize: 14,
-                  color: "var(--md-text-pri)", padding: "12px 0", fontFamily: "inherit",
-                }}
-              />
-              <button
-                onClick={handleMap}
-                disabled={loading || !url.trim()}
-                className="btn-glow"
-                style={{
-                  background: loading ? "#AFA9EC" : "linear-gradient(135deg,#7F77DD,#534AB7)",
-                  color: "white", border: "none", borderRadius: 13,
-                  padding: "13px 28px", fontSize: 13, fontWeight: 700,
-                  cursor: loading ? "not-allowed" : "pointer",
-                  whiteSpace: "nowrap", letterSpacing: "0.03em",
-                  boxShadow: loading ? "none" : "0 4px 16px rgba(83,74,183,0.35)",
-                  transition: "all 0.25s cubic-bezier(0.4,0,0.2,1)",
-                }}
-              >
-                {loading ? "Mapping…" : "Map It ↗"}
-              </button>
-            </div>
-
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-              flexWrap: "wrap",
-              margin: "-12px 0 28px",
-              animation: "fadeInUp 0.6s ease-out 0.2s both",
-            }}>
-              {EXAMPLE_URLS.map((example) => (
-                <button
-                  key={example.value}
-                  type="button"
-                  onClick={() => {
-                    setUrl(example.value);
-                    setResult(null);
-                    setError("");
-                  }}
-                  style={{
-                    background: isLight ? "rgba(255,255,255,0.68)" : "rgba(139,124,255,0.08)",
-                    border: `1px solid ${isLight ? "rgba(83,74,183,0.16)" : "rgba(139,124,255,0.2)"}`,
-                    borderRadius: 999,
-                    color: isLight ? "#534AB7" : "#AFA9EC",
-                    cursor: "pointer",
-                    fontSize: 11,
-                    fontWeight: 800,
-                    padding: "7px 12px",
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    letterSpacing: "0.01em",
-                  }}
-                >
-                  {example.label}
-                </button>
-              ))}
             </div>
 
             {error && (
@@ -708,12 +711,46 @@ export default function App() {
         {/* ══════ LIST VIEW ══════ */}
         {view === "list" && (
           <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem", gap: 16, flexWrap: "wrap" as const }}>
               <div>
                 <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 24, margin: "0 0 4px", color: "var(--md-text-pri)" }}>
                   Site Directory
                 </h2>
-                <p style={{ fontSize: 13, color: "var(--md-text-sec)", margin: 0 }}>{entries.length} entries</p>
+                <p style={{ fontSize: 13, color: "var(--md-text-sec)", margin: 0 }}>
+                  {entries.filter(e =>
+                    !listFilter.trim() ||
+                    e.domain.toLowerCase().includes(listFilter.toLowerCase()) ||
+                    e.description.site_title.toLowerCase().includes(listFilter.toLowerCase())
+                  ).length} of {entries.length} entries
+                </p>
+              </div>
+              {/* Filter input */}
+              <div style={{
+                display: "flex", alignItems: "center", gap: 8,
+                background: "var(--md-surface)",
+                border: "1px solid var(--md-border-hi)",
+                borderRadius: 10, padding: "6px 12px",
+                minWidth: 220,
+              }}>
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#AFA9EC" strokeWidth="2" style={{ flexShrink: 0 }}>
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input
+                  value={listFilter}
+                  onChange={e => setListFilter(e.target.value)}
+                  placeholder="Filter by company or domain…"
+                  style={{
+                    border: "none", outline: "none", background: "transparent",
+                    fontSize: 12, color: "var(--md-text-pri)",
+                    fontFamily: "'IBM Plex Mono', monospace", width: "100%",
+                  }}
+                />
+                {listFilter && (
+                  <button onClick={() => setListFilter("")} style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    color: "var(--md-text-dim)", fontSize: 14, padding: 0, lineHeight: 1,
+                  }}>✕</button>
+                )}
               </div>
             </div>
 
@@ -749,7 +786,13 @@ export default function App() {
                     <span key={h} style={{ fontSize: 10, fontWeight: 700, color: "var(--md-text-dim)", letterSpacing: "0.08em", textTransform: "uppercase" as const, fontFamily: "'IBM Plex Mono',monospace" }}>{h}</span>
                   ))}
                 </div>
-                {entries.map((e) => (
+                {entries
+                  .filter(e =>
+                    !listFilter.trim() ||
+                    e.domain.toLowerCase().includes(listFilter.toLowerCase()) ||
+                    e.description.site_title.toLowerCase().includes(listFilter.toLowerCase())
+                  )
+                  .map((e) => (
                   <div
                     key={e.id}
                     onClick={() => setSelected(e)}
@@ -784,6 +827,15 @@ export default function App() {
                     >Del</button>
                   </div>
                 ))}
+                {entries.filter(e =>
+                  !listFilter.trim() ||
+                  e.domain.toLowerCase().includes(listFilter.toLowerCase()) ||
+                  e.description.site_title.toLowerCase().includes(listFilter.toLowerCase())
+                ).length === 0 && (
+                  <div style={{ padding: "2rem", textAlign: "center" as const, color: "var(--md-text-dim)", fontSize: 13, fontFamily: "'IBM Plex Mono',monospace" }}>
+                    No results for "{listFilter}"
+                  </div>
+                )}
               </div>
             )}
           </>
