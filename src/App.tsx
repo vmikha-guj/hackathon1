@@ -36,6 +36,7 @@ const EXAMPLE_URLS = [
   { label: "Try Stripe", value: "https://stripe.com" },
   { label: "Try Shopify", value: "https://shopify.com" },
   { label: "Try Airbnb", value: "https://airbnb.com" },
+  { label: "Try Zomato", value: "https://www.zomato.com" },
 ];
 
 const THEMES: Record<ThemeMode, Record<string, string>> = {
@@ -383,10 +384,10 @@ export default function App() {
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <span style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 15, color: "var(--md-text-pri)", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-              Outskill Hackathon
+              MapDescriber
             </span>
             <span style={{ fontSize: 10, color: "var(--md-text-dim)", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" as const }}>
-              Group 15 • MapDescriber
+              Outskill Hackathon • Group 15
             </span>
           </div>
         </div>
@@ -651,7 +652,7 @@ export default function App() {
                     <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" />
                   </svg>
                 </div>
-                <p style={{ fontSize: 14, color: "#8883C4", margin: 0 }}>Enter any URL to create a map entry</p>
+                <p style={{ fontSize: 14, color: "var(--md-text-sec)", margin: 0 }}>Enter any URL to create a map entry</p>
                 <p style={{ fontSize: 12, color: "#AFA9EC", margin: "6px 0 0" }}>Cached results return instantly — zero API cost</p>
               </div>
             )}
@@ -663,10 +664,10 @@ export default function App() {
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <div>
-                <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 24, margin: "0 0 4px", color: "#F0EEF8", letterSpacing: "-0.02em" }}>
+                <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 24, margin: "0 0 4px", color: "var(--md-text-pri)", letterSpacing: "-0.02em" }}>
                   Mapped Sites
                 </h2>
-                <p style={{ fontSize: 13, color: "#8883C4", margin: 0 }}>
+                <p style={{ fontSize: 13, color: "var(--md-text-sec)", margin: 0 }}>
                   {entries.length} site{entries.length !== 1 ? "s" : ""} mapped
                 </p>
               </div>
@@ -684,7 +685,7 @@ export default function App() {
                 background: "white", border: "1px solid #EEEDFE",
                 borderRadius: 16, boxShadow: "0 4px 24px rgba(83,74,183,0.08)",
               }}>
-                <p style={{ fontSize: 14, color: "#8883C4", margin: "0 0 14px" }}>No sites mapped yet</p>
+                <p style={{ fontSize: 14, color: "var(--md-text-sec)", margin: "0 0 14px" }}>No sites mapped yet</p>
                 <button onClick={() => setView("map")} style={{
                   background: "linear-gradient(135deg,#7F77DD,#534AB7)",
                   color: "white", border: "none", borderRadius: 10,
@@ -709,10 +710,10 @@ export default function App() {
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <div>
-                <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 24, margin: "0 0 4px", color: "#F0EEF8" }}>
+                <h2 style={{ fontFamily: "'Playfair Display',serif", fontWeight: 800, fontSize: 24, margin: "0 0 4px", color: "var(--md-text-pri)" }}>
                   Site Directory
                 </h2>
-                <p style={{ fontSize: 13, color: "#8883C4", margin: 0 }}>{entries.length} entries</p>
+                <p style={{ fontSize: 13, color: "var(--md-text-sec)", margin: 0 }}>{entries.length} entries</p>
               </div>
             </div>
 
@@ -727,7 +728,7 @@ export default function App() {
                 textAlign: "center", padding: "3rem",
                 background: "white", border: "1px solid #EEEDFE", borderRadius: 16,
               }}>
-                <p style={{ fontSize: 14, color: "#8883C4", margin: "0 0 14px" }}>No entries yet</p>
+                <p style={{ fontSize: 14, color: "var(--md-text-sec)", margin: "0 0 14px" }}>No entries yet</p>
                 <button onClick={() => setView("map")} style={{
                   background: "linear-gradient(135deg,#7F77DD,#534AB7)",
                   color: "white", border: "none", borderRadius: 10,
@@ -737,15 +738,15 @@ export default function App() {
             )}
 
             {!entriesLoading && entries.length > 0 && (
-              <div style={{ background: "#13111F", borderRadius: 14, border: "1px solid rgba(255,255,255,0.07)", overflow: "hidden" }}>
+              <div style={{ background: "var(--md-surface)", borderRadius: 14, border: "1px solid var(--md-border)", overflow: "hidden" }}>
                 {/* Table header */}
                 <div style={{
                   display: "grid", gridTemplateColumns: "2fr 3fr 1fr 80px",
                   padding: "10px 16px", background: "rgba(255,255,255,0.03)",
-                  borderBottom: "1px solid rgba(255,255,255,0.07)", gap: 12,
+                  borderBottom: "1px solid var(--md-border)", gap: 12,
                 }}>
                   {["Site", "Value Prop", "Density", ""].map((h) => (
-                    <span key={h} style={{ fontSize: 10, fontWeight: 700, color: "#5A5870", letterSpacing: "0.08em", textTransform: "uppercase" as const, fontFamily: "'IBM Plex Mono',monospace" }}>{h}</span>
+                    <span key={h} style={{ fontSize: 10, fontWeight: 700, color: "var(--md-text-dim)", letterSpacing: "0.08em", textTransform: "uppercase" as const, fontFamily: "'IBM Plex Mono',monospace" }}>{h}</span>
                   ))}
                 </div>
                 {entries.map((e) => (
@@ -755,16 +756,16 @@ export default function App() {
                     className="ss-row"
                     style={{
                       display: "grid", gridTemplateColumns: "2fr 3fr 1fr 80px",
-                      padding: "12px 16px", borderBottom: "0.5px solid rgba(255,255,255,0.05)",
+                      padding: "12px 16px", borderBottom: "0.5px solid var(--md-border)",
                       cursor: "pointer", gap: 12, transition: "background 0.15s",
                       alignItems: "center", background: "transparent",
                     }}
                   >
                     <div>
-                      <p style={{ fontWeight: 600, fontSize: 13, margin: 0, color: "#F0EEF8", lineHeight: 1.3 }}>{e.description.site_title}</p>
-                      <p style={{ fontSize: 11, color: "#5A5870", margin: "2px 0 0", fontFamily: "'IBM Plex Mono',monospace" }}>{e.domain}</p>
+                      <p style={{ fontWeight: 600, fontSize: 13, margin: 0, color: "var(--md-text-pri)", lineHeight: 1.3 }}>{e.description.site_title}</p>
+                      <p style={{ fontSize: 11, color: "var(--md-text-dim)", margin: "2px 0 0", fontFamily: "'IBM Plex Mono',monospace" }}>{e.domain}</p>
                     </div>
-                    <p style={{ fontSize: 12, color: "#9492A8", margin: 0, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
+                    <p style={{ fontSize: 12, color: "var(--md-text-sec)", margin: 0, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
                       {e.description.core_value_prop}
                     </p>
                     <span style={{
@@ -796,8 +797,8 @@ export default function App() {
       {!isAdmin && (
         <div style={{
           position: "fixed", bottom: 16, right: 16, zIndex: 30,
-          background: "#13111F", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10,
-          padding: "8px 14px", fontSize: 11, color: "#9492A8",
+          background: "var(--md-surface)", border: "1px solid var(--md-border)", borderRadius: 10,
+          padding: "8px 14px", fontSize: 11, color: "var(--md-text-sec)",
           boxShadow: "0 2px 12px rgba(0,0,0,.4)", fontFamily: "'IBM Plex Mono',monospace",
         }}>
           Free scans: <strong style={{ color: usageCount >= FREE_LIMIT ? "#F87171" : "#8B7CFF" }}>{Math.max(0, FREE_LIMIT - usageCount)}</strong> / {FREE_LIMIT} remaining
@@ -812,7 +813,7 @@ export default function App() {
           display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
         }}>
           <div style={{
-            background: "#13111F", borderRadius: 20, maxWidth: 440, width: "100%",
+            background: "var(--md-surface)", borderRadius: 20, maxWidth: 440, width: "100%",
             padding: "40px 32px", textAlign: "center" as const,
             border: "1px solid rgba(139,124,255,0.2)",
             boxShadow: "0 32px 80px rgba(0,0,0,.8)",
@@ -831,9 +832,9 @@ export default function App() {
             </div>
             <h2 style={{
               fontFamily: "'Playfair Display',serif", fontWeight: 800,
-              fontSize: 24, margin: "0 0 8px", color: "#F0EEF8",
+              fontSize: 24, margin: "0 0 8px", color: "var(--md-text-pri)",
             }}>Free Tier Reached</h2>
-            <p style={{ fontSize: 14, color: "#9492A8", margin: "0 0 24px", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 14, color: "var(--md-text-sec)", margin: "0 0 24px", lineHeight: 1.6 }}>
               You've used all {FREE_LIMIT} free scans. Upgrade to <strong style={{ color: "#8B7CFF" }}>MapDescriber Pro</strong> for unlimited site mapping, product extraction, and cached results.
             </p>
             <button style={{
@@ -846,7 +847,7 @@ export default function App() {
             }}>Upgrade to Pro — ₹499/month</button>
             <button onClick={() => setShowPaywall(false)} style={{
               background: "transparent", border: "none",
-              fontSize: 13, color: "#5A5870", cursor: "pointer",
+              fontSize: 13, color: "var(--md-text-dim)", cursor: "pointer",
               padding: "8px 16px", fontFamily: "'Plus Jakarta Sans',sans-serif",
             }}>Maybe later</button>
           </div>
